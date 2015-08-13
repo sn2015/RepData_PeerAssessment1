@@ -1,17 +1,54 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Sergey Nazarov"
+date: "Wednesday, August 12, 2015"
+output: html_document
 ---
-
 
 ## Loading and preprocessing the data
 
+```{r}
+unzip("./repdata-data-activity.zip")
+data <- read.csv("./activity.csv")
+```
 
+looking at data
+```{r}
+summary(data)
+head(data)
+str(data)
+```
 
 ## What is mean total number of steps taken per day?
 
+here i aggregate step numbers by date, which i will use later in histogram
+```{r}
+aggregate(steps ~ date, data = data, sum)
+```
+
+making histogram steps by day. at first look it looks like normal distribution just
+with more thick first half
+```{r histogram}
+hist(aggregate(steps ~ date, data = data, sum)$steps, main = "Histogram of steps by day",
+     xlab = "number of steps")
+```
+
+here we can look at histogram more closely, using "breaks", and we see something
+interseting - days with extra activity (more than 20000 steps)
+```{r}
+hist(aggregate(steps ~ date, data = data, sum)$steps, breaks = 10, main = "Histogram of steps by day",
+     xlab = "number of steps")
+```
+
+### Mean number of steps by day
+```{r}
+mean(aggregate(steps ~ date, data = data, sum)$steps)
+```
+
+### Median number of steps by day
+```{r}
+median(aggregate(steps ~ date, data = data, sum)$steps)
+```
 
 
 ## What is the average daily activity pattern?
@@ -23,3 +60,14 @@ output:
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+
+
+
+
+
+### Version information
+```{r}
+sessionInfo()
+```
