@@ -92,7 +92,92 @@ dailypattern[dailypattern$steps == max(dailypattern$steps), ]
 
 
 ## Imputing missing values
+lets see how many missing values are in the dataset
 
+```r
+sum(is.na(data$steps))
+```
+
+```
+## [1] 2304
+```
+
+```r
+sum(is.na(data$steps))/nrow(data)
+```
+
+```
+## [1] 0.1311475
+```
+near 13% is missing
+
+for this task i create a separate dataframe *"datawithoutNA"* in which i fill NA values
+using the mean for that 5-minute interval 
+
+```r
+datawithoutNA <- data
+
+for (i in 1:nrow(datawithoutNA)) {
+        if (is.na(datawithoutNA$steps[i]) == TRUE) {
+                datawithoutNA$steps[i] <- dailypattern$steps[dailypattern$interval == datawithoutNA$interval[i]]
+        }
+}
+```
+just checking there is no NA's
+
+```r
+sum(is.na(datawithoutNA$steps)) 
+```
+
+```
+## [1] 0
+```
+
+here i aggregate step numbers by date, which i will use later in histogram2
+
+```r
+aggregate(steps ~ date, data = datawithoutNA, sum)
+```
+
+making histogram2 steps by day
+
+```r
+hist(aggregate(steps ~ date, data = datawithoutNA, sum)$steps, main = "Histogram of steps by day",
+     xlab = "number of steps")
+```
+
+![plot of chunk histogram2](figure/histogram2-1.png) 
+
+here we can look at histogram more closely, using "breaks"
+
+```r
+hist(aggregate(steps ~ date, data = datawithoutNA, sum)$steps, breaks = 10, main = "Histogram of steps by day",
+     xlab = "number of steps")
+```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
+
+### Mean number of steps by day witout NA
+
+```r
+mean(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+### Median number of steps by day without NA
+
+```r
+median(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+### the is no difference between mean number of steps with and without NA
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -126,6 +211,7 @@ sessionInfo()
 ## [1] knitr_1.9
 ## 
 ## loaded via a namespace (and not attached):
-## [1] digest_0.6.8    evaluate_0.5.5  formatR_1.0     htmltools_0.2.6
-## [5] rmarkdown_0.5.1 stringr_0.6.2   tools_3.1.3     yaml_2.1.13
+##  [1] digest_0.6.8    evaluate_0.5.5  formatR_1.0     htmltools_0.2.6
+##  [5] markdown_0.7.4  mime_0.2        rmarkdown_0.5.1 stringr_0.6.2  
+##  [9] tools_3.1.3     yaml_2.1.13
 ```

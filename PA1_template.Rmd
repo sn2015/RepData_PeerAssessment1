@@ -64,7 +64,57 @@ dailypattern[dailypattern$steps == max(dailypattern$steps), ]
 
 
 ## Imputing missing values
+lets see how many missing values are in the dataset
+```{r}
+sum(is.na(data$steps))
+sum(is.na(data$steps))/nrow(data)
+```
+near 13% is missing
 
+for this task i create a separate dataframe *"datawithoutNA"* in which i fill NA values
+using the mean for that 5-minute interval 
+```{r}
+datawithoutNA <- data
+
+for (i in 1:nrow(datawithoutNA)) {
+        if (is.na(datawithoutNA$steps[i]) == TRUE) {
+                datawithoutNA$steps[i] <- dailypattern$steps[dailypattern$interval == datawithoutNA$interval[i]]
+        }
+}
+```
+just checking there is no NA's
+```{r}
+sum(is.na(datawithoutNA$steps)) 
+```
+
+here i aggregate step numbers by date, which i will use later in histogram2
+```{r, results='hide'}
+aggregate(steps ~ date, data = datawithoutNA, sum)
+```
+
+making histogram2 steps by day
+```{r histogram2}
+hist(aggregate(steps ~ date, data = datawithoutNA, sum)$steps, main = "Histogram of steps by day",
+     xlab = "number of steps")
+```
+
+here we can look at histogram more closely, using "breaks"
+```{r}
+hist(aggregate(steps ~ date, data = datawithoutNA, sum)$steps, breaks = 10, main = "Histogram of steps by day",
+     xlab = "number of steps")
+```
+
+### Mean number of steps by day witout NA
+```{r}
+mean(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
+```
+
+### Median number of steps by day without NA
+```{r}
+median(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
+```
+
+### the is no difference between mean number of steps with and without NA
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
