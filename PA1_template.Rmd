@@ -19,6 +19,7 @@ head(data)
 str(data)
 ```
 
+
 ## What is mean total number of steps taken per day?
 
 here i aggregate step numbers by date, which i will use later in histogram
@@ -26,15 +27,8 @@ here i aggregate step numbers by date, which i will use later in histogram
 aggregate(steps ~ date, data = data, sum)
 ```
 
-making histogram steps by day. at first look it looks like normal distribution just
-with more thick first half
-```{r histogram}
-hist(aggregate(steps ~ date, data = data, sum)$steps, main = "Histogram of steps by day",
-     xlab = "number of steps")
-```
-
-here we can look at histogram more closely, using "breaks", and we see something
-interseting - days with extra activity (more than 20000 steps)
+we can look at histogram, using "breaks" = 10, and we see something
+interseting - some days with extra activity (more than 20000 steps)
 ```{r}
 hist(aggregate(steps ~ date, data = data, sum)$steps, breaks = 10, main = "Histogram of steps by day",
      xlab = "number of steps")
@@ -57,11 +51,12 @@ dailypattern <- aggregate(steps ~ interval, data = data, mean)
 plot(dailypattern, type = "l")
 ```
 
-the maximum number of steps contains interval # 835 (on average across all the days in the dataset)
+finding maximum number of steps
 ```{r}
 dailypattern[dailypattern$steps == max(dailypattern$steps), ]
 ```
-
+the maximum number of steps contains interval # 835 (on average across all the days in the dataset)
+it's actually 8:35 AM - jogging or hurrying to work? :)
 
 ## Imputing missing values
 lets see how many missing values are in the dataset
@@ -71,8 +66,8 @@ sum(is.na(data$steps))/nrow(data)
 ```
 near 13% is missing
 
-for this task i create a separate dataframe *"datawithoutNA"* in which i fill NA values
-using the mean for that 5-minute interval 
+for this task i create a separate data frame *"data without NA"* in which i fill NA values
+using the mean for the correspondent 5-minute interval
 ```{r}
 datawithoutNA <- data
 
@@ -92,13 +87,7 @@ here i aggregate step numbers by date, which i will use later in histogram2
 aggregate(steps ~ date, data = datawithoutNA, sum)
 ```
 
-making histogram2 steps by day
-```{r histogram2}
-hist(aggregate(steps ~ date, data = datawithoutNA, sum)$steps, main = "Histogram of steps by day",
-     xlab = "number of steps")
-```
-
-here we can look at histogram more closely, using "breaks"
+here we can look at histogram
 ```{r}
 hist(aggregate(steps ~ date, data = datawithoutNA, sum)$steps, breaks = 10, main = "Histogram of steps by day",
      xlab = "number of steps")
@@ -113,8 +102,8 @@ mean(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
 ```{r}
 median(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
 ```
-
 ### the is no difference between mean number of steps with and without NA
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 first I create a new dataset using data without missing values and transform date from factor to time 
