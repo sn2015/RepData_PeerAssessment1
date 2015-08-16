@@ -104,7 +104,7 @@ hist(aggregate(steps ~ date, data = datawithoutNA, sum)$steps, breaks = 10, main
      xlab = "number of steps")
 ```
 
-### Mean number of steps by day witout NA
+### Mean number of steps by day without NA
 ```{r}
 mean(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
 ```
@@ -116,12 +116,45 @@ median(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
 
 ### the is no difference between mean number of steps with and without NA
 
-
 ## Are there differences in activity patterns between weekdays and weekends?
-
-
-
-
+first I create a new dataset using data without missing values and transform date from factor to time 
+```{r}
+dataweek <- datawithoutNA
+dataweek$date <- strptime(dataweek$date, "%Y-%m-%d")
+```
+then I add a new variable using weekdays() function
+```{r}
+Sys.setlocale("LC_TIME", "English")
+dataweek$day <- weekdays(dataweek$date, abbreviate = FALSE)
+```
+then I transform weekay names into two variables: weekend and weekday 
+```{r}
+for (i in 1:nrow(dataweek)) {
+        if (dataweek$day[i] == "Saturday" | dataweek$day[i] == "Sunday") {
+                dataweek$day[i] <- "weekend"
+        } else {dataweek$day[i] <- "weekday"}
+}
+```
+Here I create two separate datasets (weekdays and weekend) with patterns on average 
+across all the days in each dataset
+```{r}
+weekendpattern <- aggregate(steps ~ interval, data = dataweek[dataweek$day == "weekend",], mean)
+weekdaypattern <- aggregate(steps ~ interval, data = dataweek[dataweek$day == "weekday",], mean)
+```
+making plot for each dataset
+```{r}
+par(mfrow=c(2 , 1))
+par(mar = c(2, 2, 2, 1))
+with(weekdaypattern,  {plot(interval, steps, type = "l", 
+                        xlab = "", ylab = "", main = "weekday")})
+with(weekendpattern,  {plot(interval, steps, type = "l", 
+                            xlab = "", ylab = "", main = "weekend")})
+```
+  
+we can see difference in daily activity pattern between weekdays and weekend  
+- later start of activity on weekends (presumably late awakening)  
+- lower level of active during the day on weekdays then weekends. may be becouse of sitting type of job
+        of the subject
 
 
 

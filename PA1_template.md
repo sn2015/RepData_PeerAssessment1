@@ -157,7 +157,7 @@ hist(aggregate(steps ~ date, data = datawithoutNA, sum)$steps, breaks = 10, main
 
 ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
 
-### Mean number of steps by day witout NA
+### Mean number of steps by day without NA
 
 ```r
 mean(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
@@ -179,12 +179,59 @@ median(aggregate(steps ~ date, data = datawithoutNA, sum)$steps)
 
 ### the is no difference between mean number of steps with and without NA
 
-
 ## Are there differences in activity patterns between weekdays and weekends?
+first I create a new dataset using data without missing values and transform date from factor to time 
 
+```r
+dataweek <- datawithoutNA
+dataweek$date <- strptime(dataweek$date, "%Y-%m-%d")
+```
+then I add a new variable using weekdays() function
 
+```r
+Sys.setlocale("LC_TIME", "English")
+```
 
+```
+## [1] "English_United States.1252"
+```
 
+```r
+dataweek$day <- weekdays(dataweek$date, abbreviate = FALSE)
+```
+then I transform weekay names into two variables: weekend and weekday 
+
+```r
+for (i in 1:nrow(dataweek)) {
+        if (dataweek$day[i] == "Saturday" | dataweek$day[i] == "Sunday") {
+                dataweek$day[i] <- "weekend"
+        } else {dataweek$day[i] <- "weekday"}
+}
+```
+Here I create two separate datasets (weekdays and weekend) with patterns on average 
+across all the days in each dataset
+
+```r
+weekendpattern <- aggregate(steps ~ interval, data = dataweek[dataweek$day == "weekend",], mean)
+weekdaypattern <- aggregate(steps ~ interval, data = dataweek[dataweek$day == "weekday",], mean)
+```
+making plot for each dataset
+
+```r
+par(mfrow=c(2 , 1))
+par(mar = c(2, 2, 2, 1))
+with(weekdaypattern,  {plot(interval, steps, type = "l", 
+                        xlab = "", ylab = "", main = "weekday")})
+with(weekendpattern,  {plot(interval, steps, type = "l", 
+                            xlab = "", ylab = "", main = "weekend")})
+```
+
+![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png) 
+  
+we can see difference in daily activity pattern between weekdays and weekend  
+- later start of activity on weekends (presumably late awakening)  
+- lower level of active during the day on weekdays then weekends. may be becouse of sitting type of job
+        of the subject
 
 
 
@@ -200,9 +247,9 @@ sessionInfo()
 ## Running under: Windows 8 x64 (build 9200)
 ## 
 ## locale:
-## [1] LC_COLLATE=Russian_Russia.1251  LC_CTYPE=Russian_Russia.1251   
-## [3] LC_MONETARY=Russian_Russia.1251 LC_NUMERIC=C                   
-## [5] LC_TIME=Russian_Russia.1251    
+## [1] LC_COLLATE=Russian_Russia.1251     LC_CTYPE=Russian_Russia.1251      
+## [3] LC_MONETARY=Russian_Russia.1251    LC_NUMERIC=C                      
+## [5] LC_TIME=English_United States.1252
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
@@ -211,7 +258,6 @@ sessionInfo()
 ## [1] knitr_1.9
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] digest_0.6.8    evaluate_0.5.5  formatR_1.0     htmltools_0.2.6
-##  [5] markdown_0.7.4  mime_0.2        rmarkdown_0.5.1 stringr_0.6.2  
-##  [9] tools_3.1.3     yaml_2.1.13
+## [1] digest_0.6.8    evaluate_0.5.5  formatR_1.0     htmltools_0.2.6
+## [5] rmarkdown_0.5.1 stringr_0.6.2   tools_3.1.3     yaml_2.1.13
 ```
